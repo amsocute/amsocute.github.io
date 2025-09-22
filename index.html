@@ -1,222 +1,226 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<title>📊 ระบบรายได้ตู้</title>
-<script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบรายได้ตู้</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 font-sans min-h-screen p-6">
+<body class="bg-gray-50 min-h-screen font-sans p-6">
+  <h1 class="text-3xl font-bold text-[#ff6b2c] mb-6 text-center">📊 ระบบรายได้ตู้</h1>
 
-<h1 class="text-3xl font-bold text-[#ff6b2c] mb-6 text-center">📊 ระบบรายได้ตู้</h1>
+  <!-- วันที่ -->
+  <div class="mb-6 max-w-sm">
+    <label class="block mb-2 font-semibold text-gray-700">📅 วันที่</label>
+    <input type="date" id="date" class="border-2 border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-[#ff6b2c] text-lg">
+    <p id="formattedDate" class="text-gray-600 mt-1"></p>
+  </div>
 
-<!-- วันที่ -->
-<div class="mb-6 max-w-sm">
-  <label class="block mb-2 font-semibold text-gray-700">📅 วันที่ (วัน เดือน พ.ศ.)</label>
-  <input type="date" id="dateInput" class="border-2 border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-[#ff6b2c] text-lg">
-  <p class="text-gray-600 mt-1" id="formattedDate"></p>
-</div>
+  <!-- ปุ่ม -->
+  <div class="mb-6 flex flex-wrap gap-3">
+    <button id="addBranch" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-5 rounded-lg shadow">➕ เพิ่มสาขา</button>
+    <button id="reset" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-5 rounded-lg shadow">🔄 รีเซ็ตค่าเริ่มต้น</button>
+    <button id="exportCSV" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg shadow">📝 ออกรายงาน CSV</button>
+  </div>
 
-<!-- ปุ่ม -->
-<div class="mb-6 flex flex-wrap gap-3">
-  <button id="addBranchBtn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-5 rounded-lg shadow">➕ เพิ่มสาขา</button>
-  <button id="resetBtn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-5 rounded-lg shadow">🔄 รีเซ็ตค่าเริ่มต้น</button>
-  <button id="exportBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg shadow">📝 ออกรายงาน CSV</button>
-</div>
+  <!-- ตาราง -->
+  <div class="overflow-x-auto mb-8">
+    <table id="branchesTable" class="w-full border text-sm bg-white rounded-xl shadow">
+      <thead>
+        <tr class="border-b bg-[#ff6b2c]/20">
+          <th class="py-2 px-2 text-left">🏢 สาขา</th>
+          <th class="py-2 px-2 text-left">💵 รายได้ (THB)</th>
+          <th class="py-2 px-2 text-left">📊 % เก็บ</th>
+          <th class="py-2 px-2 text-left text-red-500">💸 ค่าใช้จ่าย</th>
+          <th class="py-2 px-2 text-left text-green-600">📈 กำไร</th>
+          <th class="py-2 px-2 text-left">📍 โลเคชั่น</th>
+          <th class="py-2 px-2 text-left">🗑️ ลบ</th>
+        </tr>
+      </thead>
+      <tbody id="branchesBody"></tbody>
+    </table>
+  </div>
 
-<!-- ตารางสาขา -->
-<div class="overflow-x-auto mb-8">
-  <table class="w-full border text-sm bg-white rounded-xl shadow">
-    <thead>
-      <tr class="border-b bg-[#ff6b2c]/20">
-        <th class="py-2 px-2 text-left">🏢 สาขา</th>
-        <th class="py-2 px-2 text-left">💵 รายได้ (THB)</th>
-        <th class="py-2 px-2 text-left">📊 % เก็บ</th>
-        <th class="py-2 px-2 text-left text-red-500">💸 ค่าใช้จ่าย</th>
-        <th class="py-2 px-2 text-left text-green-600">📈 กำไร</th>
-        <th class="py-2 px-2 text-left">📍 โลเคชั่น</th>
-        <th class="py-2 px-2 text-left">🗑️ ลบ</th>
-      </tr>
-    </thead>
-    <tbody id="branchTableBody"></tbody>
-  </table>
-</div>
-
-<!-- ค่าใช้จ่ายเพิ่มเติม -->
-<div class="max-w-sm mb-8 bg-white p-4 rounded-xl shadow">
-  <h2 class="text-lg font-semibold mb-3 text-gray-700">🛒 ค่าใช้จ่ายเพิ่มเติม</h2>
-  <div class="space-y-3">
-    <div>
-      <label class="block font-medium text-gray-600">🗓️ ค่าใช้จ่ายรายวัน</label>
-      <input type="number" id="expenseDaily" placeholder="เช่น 500" class="border rounded p-2 w-full focus:border-[#ff6b2c] focus:outline-none text-right">
-    </div>
-    <div>
-      <label class="block font-medium text-gray-600">⛽ ค่าน้ำมัน</label>
-      <input type="number" id="expenseFuel" placeholder="เช่น 1000" class="border rounded p-2 w-full focus:border-[#ff6b2c] focus:outline-none text-right">
-    </div>
-    <div>
-      <label class="block font-medium text-gray-600">🍜 ค่าอาหาร</label>
-      <input type="number" id="expenseFood" placeholder="เช่น 800" class="border rounded p-2 w-full focus:border-[#ff6b2c] focus:outline-none text-right">
-    </div>
-    <div>
-      <label class="block font-medium text-gray-600">📦 อื่น ๆ</label>
-      <input type="number" id="expenseOther" placeholder="เช่น 300" class="border rounded p-2 w-full focus:border-[#ff6b2c] focus:outline-none text-right">
+  <!-- ค่าใช้จ่ายเพิ่มเติม -->
+  <div class="max-w-sm mb-8 bg-white p-4 rounded-xl shadow">
+    <h2 class="text-lg font-semibold mb-3 text-gray-700">🛒 ค่าใช้จ่ายเพิ่มเติม</h2>
+    <div class="space-y-3">
+      <div>
+        <label>🗓️ ค่าใช้จ่ายรายวัน</label>
+        <input type="number" id="daily" class="border rounded p-2 w-full focus:border-[#ff6b2c] focus:outline-none text-right">
+      </div>
+      <div>
+        <label>⛽ ค่าน้ำมัน</label>
+        <input type="number" id="fuel" class="border rounded p-2 w-full focus:border-[#ff6b2c] focus:outline-none text-right">
+      </div>
+      <div>
+        <label>🍜 ค่าอาหาร</label>
+        <input type="number" id="food" class="border rounded p-2 w-full focus:border-[#ff6b2c] focus:outline-none text-right">
+      </div>
+      <div>
+        <label>📦 อื่น ๆ</label>
+        <input type="number" id="other" class="border rounded p-2 w-full focus:border-[#ff6b2c] focus:outline-none text-right">
+      </div>
     </div>
   </div>
-</div>
 
-<!-- สรุป -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-  <div class="bg-[#ff6b2c]/10 p-5 rounded-xl shadow space-y-3 text-center">
-    <p class="text-xl font-semibold text-gray-700">💵 รวมรายได้: <span id="totalIncome">0</span> บาท</p>
-    <p class="text-xl font-semibold text-red-500">💸 ค่าใช้จ่ายสาขา (<span id="avgPercent">0</span>%): <span id="totalBranchCost">0</span> บาท</p>
-    <p class="text-xl font-semibold text-green-600">📈 กำไรสาขา: <span id="totalBranchProfit">0</span> บาท</p>
+  <!-- สรุป -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div id="summary1" class="bg-[#ff6b2c]/10 p-5 rounded-xl shadow space-y-3 text-center"></div>
+    <div id="summary2" class="bg-[#ff6b2c]/10 p-5 rounded-xl shadow space-y-3 text-center"></div>
   </div>
-  <div class="bg-[#ff6b2c]/10 p-5 rounded-xl shadow space-y-3 text-center">
-    <p class="text-xl font-semibold text-red-500">🛒 ค่าใช้จ่ายเพิ่มเติม: <span id="totalExpenses">0</span> บาท</p>
-    <p class="text-2xl font-bold text-green-600">✅ กำไรสุทธิ: <span id="finalProfit">0</span> บาท</p>
-  </div>
-</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const INITIAL_BRANCHES = 10;
-  let date = "";
-  let branches = Array.from({ length: INITIAL_BRANCHES }, (_, i) => ({
-    name: `สาขา ${i + 1}`,
-    income: 0,
-    percent: 30,
-    location: "",
-  }));
-  let expenses = { daily:0, fuel:0, food:0, other:0 };
-  const monthsTH = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+const INITIAL_BRANCHES = 10;
+let branches = Array.from({length: INITIAL_BRANCHES}, (_, i)=>({name:`สาขา ${i+1}`, income:0, percent:30, location:""}));
 
-  function formatThaiDate(dateStr){
-    if(!dateStr) return "";
-    const [y,m,d] = dateStr.split("-").map(Number);
-    return `${d} ${monthsTH[m-1]} ${y+543}`;
-  }
+const monthsTH = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน",
+                  "กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
 
-  function render() {
-    const table = document.getElementById("branchTableBody");
-    table.innerHTML = "";
-    let totalIncome = 0, totalBranchCost = 0, totalBranchProfit = 0;
+function formatThaiDate(dateStr){
+  if(!dateStr) return "";
+  const [year,month,day]=dateStr.split("-").map(Number);
+  return `${day} ${monthsTH[month-1]} ${year+543}`;
+}
 
-    branches.forEach((b,i)=>{
-      const cost = (b.income * b.percent)/100;
-      const profit = b.income - cost;
-      totalIncome += b.income;
-      totalBranchCost += cost;
-      totalBranchProfit += profit;
+function renderTable(){
+  const tbody = document.getElementById("branchesBody");
+  tbody.innerHTML="";
+  branches.forEach((b,i)=>{
+    const cost = (b.income*b.percent)/100;
+    const profit = b.income-cost;
+    const tr = document.createElement("tr");
+    tr.className="border-b hover:bg-gray-50";
+    tr.innerHTML=`
+      <td class="py-1 px-2"><input type="text" value="${b.name}" class="w-full border rounded p-2 text-sm focus:border-[#ff6b2c] focus:outline-none"></td>
+      <td class="py-1 px-2 text-right">
+        <div class="flex items-center">
+          <button class="bg-gray-300 px-2 rounded-l">-</button>
+          <input type="text" value="${b.income}" class="w-20 text-right border-t border-b border-gray-300 focus:outline-none">
+          <button class="bg-gray-300 px-2 rounded-r">+</button>
+        </div>
+      </td>
+      <td class="py-1 px-2 text-center">
+        <div class="flex items-center justify-center">
+          <button class="bg-gray-300 px-2 rounded-l">-</button>
+          <input type="text" value="${b.percent}" class="w-12 text-center border-t border-b border-gray-300 focus:outline-none">
+          <button class="bg-gray-300 px-2 rounded-r">+</button>
+        </div>
+      </td>
+      <td class="py-1 px-2 text-red-500 font-bold text-right">${cost.toLocaleString()}</td>
+      <td class="py-1 px-2 text-green-600 font-bold text-right">${profit.toLocaleString()}</td>
+      <td class="py-1 px-2"><input type="text" value="${b.location}" class="w-full border rounded p-2 text-sm focus:border-[#ff6b2c] focus:outline-none"></td>
+      <td class="py-1 px-2 text-center"><button class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-xs">ลบ</button></td>
+    `;
+    tbody.appendChild(tr);
 
-      const tr = document.createElement("tr");
-      tr.className="border-b hover:bg-gray-50";
-      tr.innerHTML = `
-        <td class="py-1 px-2"><input type="text" value="${b.name}" data-index="${i}" data-field="name" class="w-full border rounded p-2 text-sm focus:border-[#ff6b2c] focus:outline-none"></td>
-        <td class="py-1 px-2"><input type="number" value="${b.income}" data-index="${i}" data-field="income" class="w-full border rounded p-2 text-sm text-right focus:border-[#ff6b2c] focus:outline-none"></td>
-        <td class="py-1 px-2"><input type="number" value="${b.percent}" data-index="${i}" data-field="percent" class="w-full border rounded p-2 text-sm text-center focus:border-[#ff6b2c] focus:outline-none" min="30" max="50"></td>
-        <td class="py-1 px-2 text-red-500 font-bold text-right">${cost.toLocaleString()}</td>
-        <td class="py-1 px-2 text-green-600 font-bold text-right">${profit.toLocaleString()}</td>
-        <td class="py-1 px-2"><input type="text" value="${b.location}" data-index="${i}" data-field="location" class="w-full border rounded p-2 text-sm focus:border-[#ff6b2c] focus:outline-none"></td>
-        <td class="py-1 px-2 text-center"><button data-index="${i}" class="removeBtn bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-xs">ลบ</button></td>
-      `;
-      table.appendChild(tr);
-    });
+    // สาขา
+    tr.children[0].querySelector("input").addEventListener("input",(e)=>{b.name=e.target.value});
 
-    document.getElementById("totalIncome").innerText = totalIncome.toLocaleString();
-    document.getElementById("totalBranchCost").innerText = totalBranchCost.toLocaleString();
-    document.getElementById("totalBranchProfit").innerText = totalBranchProfit.toLocaleString();
-    document.getElementById("avgPercent").innerText = (branches.reduce((a,b)=>a+b.percent,0)/branches.length).toFixed(0);
-    
-    const totalExp = expenses.daily + expenses.fuel + expenses.food + expenses.other;
-    document.getElementById("totalExpenses").innerText = totalExp.toLocaleString();
-    document.getElementById("finalProfit").innerText = (totalBranchProfit - totalExp).toLocaleString();
-  }
+    // รายได้
+    const incomeInput = tr.children[1].querySelector("input");
+    incomeInput.addEventListener("input",(e)=>{b.income=parseInt(e.target.value)||0});
+    tr.children[1].querySelectorAll("button")[0].addEventListener("click",()=>{b.income-=100; if(b.income<0)b.income=0; renderTable()});
+    tr.children[1].querySelectorAll("button")[1].addEventListener("click",()=>{b.income+=100; renderTable()});
 
-  // วัน
-  document.getElementById("dateInput").addEventListener("input", (e)=>{
-    date = e.target.value;
-    document.getElementById("formattedDate").innerText = formatThaiDate(date);
-  });
+    // เปอร์เซ็นต์
+    const percInput = tr.children[2].querySelector("input");
+    percInput.addEventListener("input",(e)=>{b.percent=parseInt(e.target.value)||30; if(b.percent<30)b.percent=30;if(b.percent>50)b.percent=50});
+    tr.children[2].querySelectorAll("button")[0].addEventListener("click",()=>{b.percent-=5;if(b.percent<30)b.percent=30; renderTable()});
+    tr.children[2].querySelectorAll("button")[1].addEventListener("click",()=>{b.percent+=5;if(b.percent>50)b.percent=50; renderTable()});
 
-  // ตารางสาขา input
-  document.getElementById("branchTableBody").addEventListener("input",(e)=>{
-    const index = e.target.dataset.index;
-    const field = e.target.dataset.field;
-    let value = e.target.value;
-    if(field==="income" || field==="percent") value = Number(value) || 0;
-    branches[index][field] = value;
-    render();
-  });
+    // โลเคชั่น
+    tr.children[5].querySelector("input").addEventListener("input",(e)=>{b.location=e.target.value});
 
-  // ลบสาขา
-  document.getElementById("branchTableBody").addEventListener("click",(e)=>{
-    if(e.target.classList.contains("removeBtn")){
-      const index = e.target.dataset.index;
-      branches.splice(index,1);
-      render();
-    }
-  });
-
-  // เพิ่มสาขา
-  document.getElementById("addBranchBtn").addEventListener("click",()=>{
-    branches.push({name:`สาขา ${branches.length+1}`,income:0,percent:30,location:""});
-    render();
-  });
-
-  // รีเซ็ต
-  document.getElementById("resetBtn").addEventListener("click",()=>{
-    date = "";
-    branches = Array.from({ length: INITIAL_BRANCHES }, (_, i) => ({
-      name: `สาขา ${i + 1}`,
-      income: 0,
-      percent: 30,
-      location: "",
-    }));
-    expenses = { daily:0, fuel:0, food:0, other:0 };
-    document.getElementById("dateInput").value="";
-    document.getElementById("formattedDate").innerText="";
-    document.getElementById("expenseDaily").value="";
-    document.getElementById("expenseFuel").value="";
-    document.getElementById("expenseFood").value="";
-    document.getElementById("expenseOther").value="";
-    render();
-  });
-
-  // ค่าใช้จ่ายเพิ่มเติม
-  ["Daily","Fuel","Food","Other"].forEach(key=>{
-    document.getElementById("expense"+key).addEventListener("input",(e)=>{
-      expenses[key.toLowerCase()] = Number(e.target.value) || 0;
-      render();
+    // ลบ
+    tr.children[6].querySelector("button").addEventListener("click",()=>{
+      branches.splice(i,1);
+      renderTable();
     });
   });
 
-  // export CSV
-  document.getElementById("exportBtn").addEventListener("click",()=>{
-    const header=["วันที่","สาขา","รายได้ (บาท)","% เก็บ","ค่าใช้จ่าย (บาท)","กำไร (บาท)","โลเคชั่น"];
-    const dateRow=[formatThaiDate(date),"","","","","",""];
-    const rows = branches.map(b=>{
-      const cost=(b.income*b.percent)/100;
-      const profit=b.income-cost;
-      return ["",b.name,b.income,b.percent,cost,profit,b.location];
-    });
-    const summary=[["","รวมรายได้",branches.reduce((a,b)=>a+b.income,0)],
-                   ["","ค่าใช้จ่ายสาขา",branches.reduce((a,b)=>a+(b.income*b.percent/100),0)],
-                   ["","กำไรสาขา",branches.reduce((a,b)=>a+(b.income-(b.income*b.percent/100)),0)],
-                   ["","ค่าใช้จ่ายเพิ่มเติม",expenses.daily+expenses.fuel+expenses.food+expenses.other],
-                   ["","กำไรสุทธิ",(branches.reduce((a,b)=>a+(b.income-(b.income*b.percent/100)),0)-(expenses.daily+expenses.fuel+expenses.food+expenses.other))]];
-    const csvContent="\uFEFF"+[header,dateRow,...rows,[],...summary].map(r=>r.join(",")).join("\n");
-    const blob=new Blob([csvContent],{type:"text/csv;charset=utf-8;"});
-    const link=document.createElement("a");
-    link.href=URL.createObjectURL(blob);
-    link.setAttribute("download",`รายงาน_${date || "ไม่ระบุวันที่"}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  });
+  renderSummary();
+}
 
-  render();
+function getExpenses(){
+  return {
+    daily:parseInt(document.getElementById("daily").value)||0,
+    fuel:parseInt(document.getElementById("fuel").value)||0,
+    food:parseInt(document.getElementById("food").value)||0,
+    other:parseInt(document.getElementById("other").value)||0
+  };
+}
+
+function renderSummary(){
+  const totalIncome = branches.reduce((a,b)=>a+b.income,0);
+  const totalBranchCost = branches.reduce((a,b)=>a+(b.income*b.percent/100),0);
+  const totalBranchProfit = totalIncome-totalBranchCost;
+  const expenses = getExpenses();
+  const totalExpenses = expenses.daily+expenses.fuel+expenses.food+expenses.other;
+  const finalProfit = totalBranchProfit-totalExpenses;
+  const avgPercent = branches.length?branches.reduce((a,b)=>a+b.percent,0)/branches.length:0;
+
+  document.getElementById("summary1").innerHTML=`
+    <p class="text-xl font-semibold text-gray-700">💵 รวมรายได้: ${totalIncome.toLocaleString()} บาท</p>
+    <p class="text-xl font-semibold text-red-500">💸 ค่าใช้จ่ายสาขา (${avgPercent.toFixed(0)}%): ${totalBranchCost.toLocaleString()} บาท</p>
+    <p class="text-xl font-semibold text-green-600">📈 กำไรสาขา: ${totalBranchProfit.toLocaleString()} บาท</p>
+  `;
+  document.getElementById("summary2").innerHTML=`
+    <p class="text-xl font-semibold text-red-500">🛒 ค่าใช้จ่ายเพิ่มเติม: ${totalExpenses.toLocaleString()} บาท</p>
+    <p class="text-2xl font-bold text-green-600">✅ กำไรสุทธิ: ${finalProfit.toLocaleString()} บาท</p>
+  `;
+}
+
+// ปุ่ม
+document.getElementById("addBranch").addEventListener("click",()=>{
+  branches.push({name:`สาขา ${branches.length+1}`, income:0, percent:30, location:""});
+  renderTable();
 });
-</script>
+document.getElementById("reset").addEventListener("click",()=>{
+  branches=Array.from({length:INITIAL_BRANCHES}, (_,i)=>({name:`สาขา ${i+1}`, income:0, percent:30, location:""}));
+  document.getElementById("daily").value="";
+  document.getElementById("fuel").value="";
+  document.getElementById("food").value="";
+  document.getElementById("other").value="";
+  document.getElementById("date").value="";
+  document.getElementById("formattedDate").textContent="";
+  renderTable();
+});
+document.getElementById("exportCSV").addEventListener("click",()=>{
+  const header=["วันที่","สาขา","รายได้ (บาท)","% เก็บ","ค่าใช้จ่าย (บาท)","กำไร (บาท)","โลเคชั่น"];
+  const date = document.getElementById("date").value;
+  const dateRow=[formatThaiDate(date),"","","","","",""];
+  const rows = branches.map(b=>["",b.name,b.income,b.percent,(b.income*b.percent/100),(b.income-(b.income*b.percent/100)),b.location]);
+  const expenses=getExpenses();
+  const summary=[
+    ["","รวมรายได้", branches.reduce((a,b)=>a+b.income,0)],
+    ["","ค่าใช้จ่ายสาขา", branches.reduce((a,b)=>a+(b.income*b.percent/100),0)],
+    ["","กำไรสาขา", branches.reduce((a,b)=>a+b.income-(b.income*b.percent/100),0)],
+    ["","ค่าใช้จ่ายเพิ่มเติม", expenses.daily+expenses.fuel+expenses.food+expenses.other],
+    ["","กำไรสุทธิ",(branches.reduce((a,b)=>a+b.income-(b.income*b.percent/100),0)-(expenses.daily+expenses.fuel+expenses.food+expenses.other))]
+  ];
+  const csvContent="\uFEFF"+[header,dateRow,...rows,[],...summary].map(r=>r.join(",")).join("\n");
+  const blob=new Blob([csvContent], {type:"text/csv;charset=utf-8;"});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.setAttribute("download",`รายงาน_${date||"ไม่ระบุวันที่"}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
 
+// วันที่
+document.getElementById("date").addEventListener("input",(e)=>{
+  document.getElementById("formattedDate").textContent="วันที่ที่เลือก: "+formatThaiDate(e.target.value);
+});
+
+// ค่าใช้จ่าย
+["daily","fuel","food","other"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",renderSummary);
+});
+
+// Render ครั้งแรก
+renderTable();
+</script>
 </body>
 </html>
