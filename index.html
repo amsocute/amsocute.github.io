@@ -62,6 +62,16 @@
       box-shadow: 0 7px 14px rgba(33, 150, 243, 0.3);
     }
     
+    .btn-calculate {
+      background: linear-gradient(45deg, #9c27b0, #e040fb);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-calculate:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(156, 39, 176, 0.3);
+    }
+    
     .income-input {
       transition: all 0.3s ease;
     }
@@ -126,154 +136,204 @@
     .btn-icon:hover {
       transform: scale(1.1);
     }
+    
+    /* ปรับสำหรับมือถือ */
+    @media (max-width: 768px) {
+      .mobile-input {
+        font-size: 16px; /* ป้องกันการ zoom เมื่อ focus บน iOS */
+      }
+      
+      .mobile-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .mobile-button {
+        padding: 12px 16px;
+        font-size: 16px;
+      }
+      
+      .mobile-card {
+        padding: 16px;
+      }
+    }
   </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="min-h-screen p-2 md:p-8">
   <div class="max-w-7xl mx-auto">
     <!-- Header -->
-    <header class="text-center mb-10 fade-in">
-      <div class="inline-flex items-center justify-center bg-white rounded-full p-4 shadow-lg mb-4">
-        <i class="fas fa-chart-line text-4xl text-[#ff6b2c]"></i>
+    <header class="text-center mb-6 fade-in">
+      <div class="inline-flex items-center justify-center bg-white rounded-full p-3 shadow-lg mb-3">
+        <i class="fas fa-chart-line text-3xl text-[#ff6b2c]"></i>
       </div>
-      <h1 class="text-4xl md:text-5xl font-bold text-[#ff6b2c] mb-2">ระบบรายได้ตู้</h1>
-      <p class="text-gray-600">ระบบจัดการรายได้และค่าใช้จ่ายสำหรับตู้ขายของ</p>
+      <h1 class="text-3xl md:text-4xl font-bold text-[#ff6b2c] mb-2">ระบบรายได้ตู้</h1>
+      <p class="text-gray-600 text-sm md:text-base">ระบบจัดการรายได้และค่าใช้จ่ายสำหรับตู้ขายของ</p>
     </header>
 
     <!-- Main Content -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <!-- Left Column -->
-      <div class="lg:col-span-2 space-y-6">
-        <!-- Date Card -->
-        <div class="glass-effect p-6 card fade-in">
-          <div class="flex items-center mb-4">
-            <i class="fas fa-calendar-alt text-2xl text-[#ff6b2c] mr-3"></i>
-            <h2 class="text-xl font-semibold text-gray-800">วันที่บันทึก</h2>
-          </div>
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <input type="date" id="date" class="income-input border-2 border-gray-200 rounded-xl p-3 w-full sm:w-auto focus:outline-none focus:border-[#ff6b2c] text-lg">
-            <div id="formattedDate" class="text-gray-600 bg-gray-100 px-4 py-2 rounded-lg font-medium"></div>
-          </div>
+    <div class="grid grid-cols-1 gap-6 mb-6">
+      <!-- Date Card -->
+      <div class="glass-effect p-4 md:p-6 card fade-in mobile-card">
+        <div class="flex items-center mb-3">
+          <i class="fas fa-calendar-alt text-xl md:text-2xl text-[#ff6b2c] mr-3"></i>
+          <h2 class="text-lg md:text-xl font-semibold text-gray-800">วันที่บันทึก</h2>
         </div>
-
-        <!-- Buttons -->
-        <div class="glass-effect p-6 card fade-in">
-          <div class="flex flex-wrap gap-4 justify-center">
-            <button id="addBranch" class="btn-success text-white font-semibold py-3 px-6 rounded-xl shadow flex items-center">
-              <i class="fas fa-plus-circle mr-2"></i> เพิ่มสาขา
-            </button>
-            <button id="reset" class="btn-danger text-white font-semibold py-3 px-6 rounded-xl shadow flex items-center">
-              <i class="fas fa-redo-alt mr-2"></i> รีเซ็ตค่าเริ่มต้น
-            </button>
-            <button id="exportCSV" class="btn-info text-white font-semibold py-3 px-6 rounded-xl shadow flex items-center">
-              <i class="fas fa-file-csv mr-2"></i> ออกรายงาน CSV
-            </button>
-          </div>
+        <div class="flex flex-col items-start gap-3">
+          <input type="date" id="date" class="income-input mobile-input border-2 border-gray-200 rounded-xl p-3 w-full focus:outline-none focus:border-[#ff6b2c] text-lg">
+          <div id="formattedDate" class="text-gray-600 bg-gray-100 px-4 py-2 rounded-lg font-medium w-full text-center"></div>
         </div>
+      </div>
 
-        <!-- Branches Table -->
-        <div class="glass-effect p-6 card overflow-hidden fade-in">
-          <div class="flex items-center mb-4">
-            <i class="fas fa-store text-2xl text-[#ff6b2c] mr-3"></i>
-            <h2 class="text-xl font-semibold text-gray-800">ข้อมูลสาขา</h2>
+      <!-- Buttons -->
+      <div class="glass-effect p-4 md:p-6 card fade-in mobile-card">
+        <div class="grid grid-cols-2 gap-3">
+          <button id="addBranch" class="btn-success text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
+            <i class="fas fa-plus-circle mr-2"></i> <span class="hidden sm:inline">เพิ่มสาขา</span>
+          </button>
+          <button id="reset" class="btn-danger text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
+            <i class="fas fa-redo-alt mr-2"></i> <span class="hidden sm:inline">รีเซ็ต</span>
+          </button>
+          <button id="exportCSV" class="btn-info text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
+            <i class="fas fa-file-csv mr-2"></i> <span class="hidden sm:inline">ออกรายงาน</span>
+          </button>
+          <button id="calculate" class="btn-calculate text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
+            <i class="fas fa-calculator mr-2"></i> <span class="hidden sm:inline">คำนวณ</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Branches Table -->
+      <div class="glass-effect p-4 md:p-6 card overflow-hidden fade-in mobile-card">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-store text-xl md:text-2xl text-[#ff6b2c] mr-3"></i>
+          <h2 class="text-lg md:text-xl font-semibold text-gray-800">ข้อมูลสาขา</h2>
+        </div>
+        <div class="mobile-table-container">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="border-b-2 border-[#ff6b2c]/30 bg-[#ff6b2c]/10">
+                <th class="py-2 px-2 md:px-4 text-left font-semibold text-gray-700 text-xs md:text-sm">
+                  <i class="fas fa-building mr-1"></i><span class="hidden sm:inline">สาขา</span>
+                </th>
+                <th class="py-2 px-2 md:px-4 text-left font-semibold text-gray-700 text-xs md:text-sm">
+                  <i class="fas fa-money-bill-wave mr-1"></i><span class="hidden sm:inline">รายได้</span>
+                </th>
+                <th class="py-2 px-2 md:px-4 text-left font-semibold text-gray-700 text-xs md:text-sm">
+                  <i class="fas fa-percentage mr-1"></i><span class="hidden sm:inline">% เก็บ</span>
+                </th>
+                <th class="py-2 px-2 md:px-4 text-left font-semibold text-red-600 text-xs md:text-sm">
+                  <i class="fas fa-hand-holding-usd mr-1"></i><span class="hidden sm:inline">ค่าใช้จ่าย</span>
+                </th>
+                <th class="py-2 px-2 md:px-4 text-left font-semibold text-green-600 text-xs md:text-sm">
+                  <i class="fas fa-chart-line mr-1"></i><span class="hidden sm:inline">กำไร</span>
+                </th>
+                <th class="py-2 px-2 md:px-4 text-left font-semibold text-gray-700 text-xs md:text-sm">
+                  <i class="fas fa-map-marker-alt mr-1"></i><span class="hidden sm:inline">โลเคชั่น</span>
+                </th>
+                <th class="py-2 px-2 md:px-4 text-center font-semibold text-gray-700 text-xs md:text-sm">
+                  <i class="fas fa-trash-alt mr-1"></i><span class="hidden sm:inline">ลบ</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="branchesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Additional Expenses -->
+      <div class="glass-effect p-4 md:p-6 card fade-in mobile-card">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-shopping-cart text-xl md:text-2xl text-[#ff6b2c] mr-3"></i>
+          <h2 class="text-lg md:text-xl font-semibold text-gray-800">ค่าใช้จ่ายเพิ่มเติม</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-2 font-medium text-gray-700 text-sm md:text-base">
+              <i class="fas fa-calendar-day mr-2 text-[#ff6b2c]"></i>ค่าใช้จ่ายรายวัน
+            </label>
+            <div class="flex items-center">
+              <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded-l-lg border border-gray-300">
+                <i class="fas fa-minus"></i>
+              </button>
+              <div class="relative flex-grow">
+                <input type="number" id="daily" class="income-input mobile-input border-2 border-gray-200 w-full focus:outline-none focus:border-[#ff6b2c] text-right pr-10 py-2">
+                <span class="absolute right-3 top-2 text-gray-500">฿</span>
+              </div>
+              <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded-r-lg border border-gray-300">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full border-collapse">
-              <thead>
-                <tr class="border-b-2 border-[#ff6b2c]/30 bg-[#ff6b2c]/10">
-                  <th class="py-3 px-4 text-left font-semibold text-gray-700">
-                    <i class="fas fa-building mr-2"></i>สาขา
-                  </th>
-                  <th class="py-3 px-4 text-left font-semibold text-gray-700">
-                    <i class="fas fa-money-bill-wave mr-2"></i>รายได้ (THB)
-                  </th>
-                  <th class="py-3 px-4 text-left font-semibold text-gray-700">
-                    <i class="fas fa-percentage mr-2"></i>% เก็บ
-                  </th>
-                  <th class="py-3 px-4 text-left font-semibold text-red-600">
-                    <i class="fas fa-hand-holding-usd mr-2"></i>ค่าใช้จ่าย
-                  </th>
-                  <th class="py-3 px-4 text-left font-semibold text-green-600">
-                    <i class="fas fa-chart-line mr-2"></i>กำไร
-                  </th>
-                  <th class="py-3 px-4 text-left font-semibold text-gray-700">
-                    <i class="fas fa-map-marker-alt mr-2"></i>โลเคชั่น
-                  </th>
-                  <th class="py-3 px-4 text-center font-semibold text-gray-700">
-                    <i class="fas fa-trash-alt mr-2"></i>ลบ
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="branchesBody"></tbody>
-            </table>
+          <div>
+            <label class="block mb-2 font-medium text-gray-700 text-sm md:text-base">
+              <i class="fas fa-gas-pump mr-2 text-[#ff6b2c]"></i>ค่าน้ำมัน
+            </label>
+            <div class="flex items-center">
+              <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded-l-lg border border-gray-300">
+                <i class="fas fa-minus"></i>
+              </button>
+              <div class="relative flex-grow">
+                <input type="number" id="fuel" class="income-input mobile-input border-2 border-gray-200 w-full focus:outline-none focus:border-[#ff6b2c] text-right pr-10 py-2">
+                <span class="absolute right-3 top-2 text-gray-500">฿</span>
+              </div>
+              <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded-r-lg border border-gray-300">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block mb-2 font-medium text-gray-700 text-sm md:text-base">
+              <i class="fas fa-utensils mr-2 text-[#ff6b2c]"></i>ค่าอาหาร
+            </label>
+            <div class="flex items-center">
+              <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded-l-lg border border-gray-300">
+                <i class="fas fa-minus"></i>
+              </button>
+              <div class="relative flex-grow">
+                <input type="number" id="food" class="income-input mobile-input border-2 border-gray-200 w-full focus:outline-none focus:border-[#ff6b2c] text-right pr-10 py-2">
+                <span class="absolute right-3 top-2 text-gray-500">฿</span>
+              </div>
+              <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded-r-lg border border-gray-300">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block mb-2 font-medium text-gray-700 text-sm md:text-base">
+              <i class="fas fa-box mr-2 text-[#ff6b2c]"></i>อื่น ๆ
+            </label>
+            <div class="flex items-center">
+              <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded-l-lg border border-gray-300">
+                <i class="fas fa-minus"></i>
+              </button>
+              <div class="relative flex-grow">
+                <input type="number" id="other" class="income-input mobile-input border-2 border-gray-200 w-full focus:outline-none focus:border-[#ff6b2c] text-right pr-10 py-2">
+                <span class="absolute right-3 top-2 text-gray-500">฿</span>
+              </div>
+              <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded-r-lg border border-gray-300">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Right Column -->
-      <div class="space-y-6">
-        <!-- Additional Expenses -->
-        <div class="glass-effect p-6 card fade-in">
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="summary-card p-4 md:p-6 rounded-xl shadow-lg card fade-in mobile-card">
           <div class="flex items-center mb-4">
-            <i class="fas fa-shopping-cart text-2xl text-[#ff6b2c] mr-3"></i>
-            <h2 class="text-xl font-semibold text-gray-800">ค่าใช้จ่ายเพิ่มเติม</h2>
+            <i class="fas fa-chart-pie text-xl md:text-2xl mr-3"></i>
+            <h2 class="text-lg md:text-xl font-semibold">สรุปรายได้</h2>
           </div>
-          <div class="space-y-4">
-            <div>
-              <label class="block mb-2 font-medium text-gray-700">
-                <i class="fas fa-calendar-day mr-2 text-[#ff6b2c]"></i>ค่าใช้จ่ายรายวัน
-              </label>
-              <div class="relative">
-                <input type="number" id="daily" class="income-input border-2 border-gray-200 rounded-xl p-3 w-full focus:outline-none focus:border-[#ff6b2c] text-right pr-10">
-                <span class="absolute right-3 top-3 text-gray-500">฿</span>
-              </div>
-            </div>
-            <div>
-              <label class="block mb-2 font-medium text-gray-700">
-                <i class="fas fa-gas-pump mr-2 text-[#ff6b2c]"></i>ค่าน้ำมัน
-              </label>
-              <div class="relative">
-                <input type="number" id="fuel" class="income-input border-2 border-gray-200 rounded-xl p-3 w-full focus:outline-none focus:border-[#ff6b2c] text-right pr-10">
-                <span class="absolute right-3 top-3 text-gray-500">฿</span>
-              </div>
-            </div>
-            <div>
-              <label class="block mb-2 font-medium text-gray-700">
-                <i class="fas fa-utensils mr-2 text-[#ff6b2c]"></i>ค่าอาหาร
-              </label>
-              <div class="relative">
-                <input type="number" id="food" class="income-input border-2 border-gray-200 rounded-xl p-3 w-full focus:outline-none focus:border-[#ff6b2c] text-right pr-10">
-                <span class="absolute right-3 top-3 text-gray-500">฿</span>
-              </div>
-            </div>
-            <div>
-              <label class="block mb-2 font-medium text-gray-700">
-                <i class="fas fa-box mr-2 text-[#ff6b2c]"></i>อื่น ๆ
-              </label>
-              <div class="relative">
-                <input type="number" id="other" class="income-input border-2 border-gray-200 rounded-xl p-3 w-full focus:outline-none focus:border-[#ff6b2c] text-right pr-10">
-                <span class="absolute right-3 top-3 text-gray-500">฿</span>
-              </div>
-            </div>
-          </div>
+          <div id="summary1" class="space-y-3"></div>
         </div>
-
-        <!-- Summary Cards -->
-        <div class="space-y-6">
-          <div class="summary-card p-6 rounded-xl shadow-lg card fade-in">
-            <div class="flex items-center mb-4">
-              <i class="fas fa-chart-pie text-2xl mr-3"></i>
-              <h2 class="text-xl font-semibold">สรุปรายได้</h2>
-            </div>
-            <div id="summary1" class="space-y-3"></div>
+        
+        <div class="expense-card p-4 md:p-6 rounded-xl shadow-lg card fade-in mobile-card">
+          <div class="flex items-center mb-4">
+            <i class="fas fa-wallet text-xl md:text-2xl mr-3"></i>
+            <h2 class="text-lg md:text-xl font-semibold">สรุปค่าใช้จ่าย</h2>
           </div>
-          
-          <div class="expense-card p-6 rounded-xl shadow-lg card fade-in">
-            <div class="flex items-center mb-4">
-              <i class="fas fa-wallet text-2xl mr-3"></i>
-              <h2 class="text-xl font-semibold">สรุปค่าใช้จ่าย</h2>
-            </div>
-            <div id="summary2" class="space-y-3"></div>
-          </div>
+          <div id="summary2" class="space-y-3"></div>
         </div>
       </div>
     </div>
@@ -301,45 +361,45 @@ function renderTable(){
     const tr = document.createElement("tr");
     tr.className="border-b table-row";
     tr.innerHTML=`
-      <td class="py-3 px-4">
-        <input type="text" value="${b.name}" class="w-full border-2 border-gray-200 rounded-lg p-2 text-sm focus:border-[#ff6b2c] focus:outline-none transition-all">
+      <td class="py-2 px-2 md:px-4">
+        <input type="text" value="${b.name}" class="w-full border-2 border-gray-200 rounded-lg p-1 md:p-2 text-xs md:text-sm focus:border-[#ff6b2c] focus:outline-none transition-all mobile-input">
       </td>
-      <td class="py-3 px-4">
+      <td class="py-2 px-2 md:px-4">
         <div class="flex items-center">
-          <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-l-lg border border-gray-300">
+          <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-l-lg border border-gray-300 text-xs income-minus">
             <i class="fas fa-minus"></i>
           </button>
           <div class="relative">
-            <input type="text" value="${b.income}" class="w-24 text-center border-t-2 border-b-2 border-gray-300 focus:outline-none py-1">
-            <span class="absolute right-2 top-1 text-gray-500">฿</span>
+            <input type="text" value="${b.income}" class="w-16 md:w-24 text-center border-t-2 border-b-2 border-gray-300 focus:outline-none py-1 mobile-input income-input">
+            <span class="absolute right-1 md:right-2 top-1 text-gray-500 text-xs">฿</span>
           </div>
-          <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-r-lg border border-gray-300">
+          <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-r-lg border border-gray-300 text-xs income-plus">
             <i class="fas fa-plus"></i>
           </button>
         </div>
       </td>
-      <td class="py-3 px-4">
+      <td class="py-2 px-2 md:px-4">
         <div class="flex items-center justify-center">
-          <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-l-lg border border-gray-300">
+          <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-l-lg border border-gray-300 text-xs percent-minus">
             <i class="fas fa-minus"></i>
           </button>
-          <input type="text" value="${b.percent}" class="w-12 text-center border-t-2 border-b-2 border-gray-300 focus:outline-none py-1">
-          <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-r-lg border border-gray-300">
+          <input type="text" value="${b.percent}" class="w-8 md:w-12 text-center border-t-2 border-b-2 border-gray-300 focus:outline-none py-1 mobile-input percent-input">
+          <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-r-lg border border-gray-300 text-xs percent-plus">
             <i class="fas fa-plus"></i>
           </button>
         </div>
       </td>
-      <td class="py-3 px-4 text-red-500 font-bold text-right">
+      <td class="py-2 px-2 md:px-4 text-red-500 font-bold text-right text-xs md:text-sm">
         <i class="fas fa-arrow-down mr-1"></i>${cost.toLocaleString()}
       </td>
-      <td class="py-3 px-4 text-green-600 font-bold text-right">
+      <td class="py-2 px-2 md:px-4 text-green-600 font-bold text-right text-xs md:text-sm">
         <i class="fas fa-arrow-up mr-1"></i>${profit.toLocaleString()}
       </td>
-      <td class="py-3 px-4">
-        <input type="text" value="${b.location}" class="w-full border-2 border-gray-200 rounded-lg p-2 text-sm focus:border-[#ff6b2c] focus:outline-none transition-all">
+      <td class="py-2 px-2 md:px-4">
+        <input type="text" value="${b.location}" class="w-full border-2 border-gray-200 rounded-lg p-1 md:p-2 text-xs md:text-sm focus:border-[#ff6b2c] focus:outline-none transition-all mobile-input">
       </td>
-      <td class="py-3 px-4 text-center">
-        <button class="btn-icon bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm">
+      <td class="py-2 px-2 md:px-4 text-center">
+        <button class="btn-icon bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded-lg text-xs">
           <i class="fas fa-trash"></i>
         </button>
       </td>
@@ -351,15 +411,53 @@ function renderTable(){
 
     // รายได้
     const incomeInput = tr.children[1].querySelector("input");
-    incomeInput.addEventListener("input",(e)=>{b.income=parseInt(e.target.value)||0});
-    tr.children[1].querySelectorAll("button")[0].addEventListener("click",()=>{b.income-=100; if(b.income<0)b.income=0; renderTable()});
-    tr.children[1].querySelectorAll("button")[1].addEventListener("click",()=>{b.income+=100; renderTable()});
+    incomeInput.addEventListener("input",(e)=>{
+      b.income=parseInt(e.target.value)||0;
+      updateRowValues(tr, b);
+      renderSummary();
+    });
+    
+    tr.querySelector(".income-minus").addEventListener("click",()=>{
+      b.income-=100; 
+      if(b.income<0)b.income=0; 
+      incomeInput.value = b.income;
+      updateRowValues(tr, b);
+      renderSummary();
+    });
+    
+    tr.querySelector(".income-plus").addEventListener("click",()=>{
+      b.income+=100; 
+      incomeInput.value = b.income;
+      updateRowValues(tr, b);
+      renderSummary();
+    });
 
     // เปอร์เซ็นต์
     const percInput = tr.children[2].querySelector("input");
-    percInput.addEventListener("input",(e)=>{b.percent=parseInt(e.target.value)||30; if(b.percent<30)b.percent=30;if(b.percent>50)b.percent=50});
-    tr.children[2].querySelectorAll("button")[0].addEventListener("click",()=>{b.percent-=5;if(b.percent<30)b.percent=30; renderTable()});
-    tr.children[2].querySelectorAll("button")[1].addEventListener("click",()=>{b.percent+=5;if(b.percent>50)b.percent=50; renderTable()});
+    percInput.addEventListener("input",(e)=>{
+      b.percent=parseInt(e.target.value)||30; 
+      if(b.percent<30)b.percent=30;
+      if(b.percent>50)b.percent=50;
+      percInput.value = b.percent;
+      updateRowValues(tr, b);
+      renderSummary();
+    });
+    
+    tr.querySelector(".percent-minus").addEventListener("click",()=>{
+      b.percent-=5;
+      if(b.percent<30)b.percent=30; 
+      percInput.value = b.percent;
+      updateRowValues(tr, b);
+      renderSummary();
+    });
+    
+    tr.querySelector(".percent-plus").addEventListener("click",()=>{
+      b.percent+=5;
+      if(b.percent>50)b.percent=50; 
+      percInput.value = b.percent;
+      updateRowValues(tr, b);
+      renderSummary();
+    });
 
     // โลเคชั่น
     tr.children[5].querySelector("input").addEventListener("input",(e)=>{b.location=e.target.value});
@@ -370,8 +468,14 @@ function renderTable(){
       renderTable();
     });
   });
+}
 
-  renderSummary();
+function updateRowValues(tr, branch) {
+  const cost = (branch.income * branch.percent) / 100;
+  const profit = branch.income - cost;
+  
+  tr.children[3].innerHTML = `<i class="fas fa-arrow-down mr-1"></i>${cost.toLocaleString()}`;
+  tr.children[4].innerHTML = `<i class="fas fa-arrow-up mr-1"></i>${profit.toLocaleString()}`;
 }
 
 function getExpenses(){
@@ -394,26 +498,26 @@ function renderSummary(){
 
   document.getElementById("summary1").innerHTML=`
     <div class="flex justify-between items-center">
-      <span class="font-medium">รวมรายได้:</span>
-      <span class="font-bold text-xl">${totalIncome.toLocaleString()} ฿</span>
+      <span class="font-medium text-sm md:text-base">รวมรายได้:</span>
+      <span class="font-bold text-lg md:text-xl">${totalIncome.toLocaleString()} ฿</span>
     </div>
     <div class="flex justify-between items-center">
-      <span class="font-medium">ค่าใช้จ่ายสาขา (${avgPercent.toFixed(0)}%):</span>
-      <span class="font-bold text-xl">${totalBranchCost.toLocaleString()} ฿</span>
+      <span class="font-medium text-sm md:text-base">ค่าใช้จ่ายสาขา (${avgPercent.toFixed(0)}%):</span>
+      <span class="font-bold text-lg md:text-xl">${totalBranchCost.toLocaleString()} ฿</span>
     </div>
     <div class="flex justify-between items-center border-t border-white/30 pt-3">
-      <span class="font-medium">กำไรสาขา:</span>
-      <span class="font-bold text-xl">${totalBranchProfit.toLocaleString()} ฿</span>
+      <span class="font-medium text-sm md:text-base">กำไรสาขา:</span>
+      <span class="font-bold text-lg md:text-xl">${totalBranchProfit.toLocaleString()} ฿</span>
     </div>
   `;
   document.getElementById("summary2").innerHTML=`
     <div class="flex justify-between items-center">
-      <span class="font-medium">ค่าใช้จ่ายเพิ่มเติม:</span>
-      <span class="font-bold text-xl">${totalExpenses.toLocaleString()} ฿</span>
+      <span class="font-medium text-sm md:text-base">ค่าใช้จ่ายเพิ่มเติม:</span>
+      <span class="font-bold text-lg md:text-xl">${totalExpenses.toLocaleString()} ฿</span>
     </div>
     <div class="flex justify-between items-center border-t border-white/30 pt-3">
-      <span class="font-medium">กำไรสุทธิ:</span>
-      <span class="font-bold text-2xl">${finalProfit.toLocaleString()} ฿</span>
+      <span class="font-medium text-sm md:text-base">กำไรสุทธิ:</span>
+      <span class="font-bold text-xl md:text-2xl">${finalProfit.toLocaleString()} ฿</span>
     </div>
   `;
 }
@@ -431,6 +535,8 @@ document.getElementById("reset").addEventListener("click",()=>{
   document.getElementById("other").value="";
   document.getElementById("date").value="";
   document.getElementById("formattedDate").textContent="";
+  document.getElementById("summary1").innerHTML = "";
+  document.getElementById("summary2").innerHTML = "";
   renderTable();
 });
 document.getElementById("exportCSV").addEventListener("click",()=>{
@@ -456,14 +562,50 @@ document.getElementById("exportCSV").addEventListener("click",()=>{
   document.body.removeChild(link);
 });
 
+// ปุ่มคำนวณ
+document.getElementById("calculate").addEventListener("click",()=>{
+  renderSummary();
+  
+  // แสดงการ์ดสรุปผลลัพธ์ด้วย animation
+  const summaryCards = document.querySelectorAll('.summary-card, .expense-card');
+  summaryCards.forEach((card, index) => {
+    setTimeout(() => {
+      card.style.animation = 'fadeIn 0.5s ease forwards';
+    }, index * 200);
+  });
+});
+
 // วันที่
 document.getElementById("date").addEventListener("input",(e)=>{
   document.getElementById("formattedDate").textContent="วันที่ที่เลือก: "+formatThaiDate(e.target.value);
 });
 
-// ค่าใช้จ่าย
-["daily","fuel","food","other"].forEach(id=>{
-  document.getElementById(id).addEventListener("input",renderSummary);
+// ค่าใช้จ่ายเพิ่มเติม - ปุ่มลด
+document.querySelectorAll('#daily, #fuel, #food, #other').forEach((input, index) => {
+  const buttons = input.parentElement.parentElement.querySelectorAll('button');
+  const minusBtn = buttons[0];
+  const plusBtn = buttons[1];
+  
+  // ปุ่มลด
+  minusBtn.addEventListener('click', () => {
+    const currentValue = parseInt(input.value) || 0;
+    const newValue = Math.max(0, currentValue - 100);
+    input.value = newValue;
+    renderSummary();
+  });
+  
+  // ปุ่มเพิ่ม
+  plusBtn.addEventListener('click', () => {
+    const currentValue = parseInt(input.value) || 0;
+    const newValue = currentValue + 100;
+    input.value = newValue;
+    renderSummary();
+  });
+  
+  // การพิมพ์โดยตรง
+  input.addEventListener('input', () => {
+    renderSummary();
+  });
 });
 
 // Render ครั้งแรก
