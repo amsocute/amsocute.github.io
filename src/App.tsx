@@ -1,9 +1,5 @@
 import { useState } from "react";
 
-export default function App() {
-  const [date, setDate] = useState("");
-  ...
-}
 
 export default function App() {
   const INITIAL_BRANCHES = 10;
