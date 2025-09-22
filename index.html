@@ -248,7 +248,7 @@
       
       /* ปรับขนาดช่องสาขาให้ใหญ่ขึ้นในมือถือ */
       .branch-input {
-        min-width: 100px !important;
+        min-width: 150px !important;
         font-size: 16px !important;
         padding: 8px !important;
       }
@@ -260,6 +260,12 @@
       
       .mobile-table td, .mobile-table th {
         padding: 8px 4px !important;
+      }
+      
+      /* ปรับขนาดช่องรายได้ให้ใหญ่ขึ้นในมือถือ */
+      .income-field {
+        min-width: 100px !important;
+        font-size: 16px !important;
       }
     }
   </style>
@@ -293,16 +299,16 @@
       <div class="glass-effect p-4 md:p-6 card fade-in mobile-card">
         <div class="grid grid-cols-2 gap-3">
           <button id="addBranch" class="btn-success text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
-            <i class="fas fa-plus-circle mr-2"></i> <span class="hidden sm:inline">เพิ่มสาขา</span>
+            <i class="fas fa-plus-circle mr-2"></i> <span>เพิ่มสาขา</span>
           </button>
           <button id="reset" class="btn-danger text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
-            <i class="fas fa-redo-alt mr-2"></i> <span class="hidden sm:inline">รีเซ็ต</span>
+            <i class="fas fa-redo-alt mr-2"></i> <span>รีเซ็ต</span>
           </button>
           <button id="exportCSV" class="btn-info text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
-            <i class="fas fa-file-csv mr-2"></i> <span class="hidden sm:inline">ออกรายงาน</span>
+            <i class="fas fa-file-csv mr-2"></i> <span>ออกรายงาน</span>
           </button>
           <button id="calculate" class="btn-calculate text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
-            <i class="fas fa-calculator mr-2"></i> <span class="hidden sm:inline">คำนวณ</span>
+            <i class="fas fa-calculator mr-2"></i> <span>คำนวณ</span>
           </button>
         </div>
       </div>
@@ -532,7 +538,7 @@ function renderTable(){
             <i class="fas fa-minus"></i>
           </button>
           <div class="relative">
-            <input type="text" value="${b.income}" class="w-16 md:w-24 text-center border-t-2 border-b-2 border-gray-300 focus:outline-none py-1 mobile-input income-input">
+            <input type="text" value="${b.income}" class="w-16 md:w-24 text-center border-t-2 border-b-2 border-gray-300 focus:outline-none py-1 mobile-input income-input income-field" maxlength="5">
             <span class="absolute right-1 md:right-2 top-1 text-gray-500 text-xs">฿</span>
           </div>
           <button class="btn-icon bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-r-lg border border-gray-300 text-xs income-plus">
@@ -574,7 +580,13 @@ function renderTable(){
     // รายได้
     const incomeInput = tr.children[1].querySelector("input");
     incomeInput.addEventListener("input",(e)=>{
-      b.income=parseInt(e.target.value)||0;
+      // จำกัดค่าไม่เกิน 5 หลัก
+      let value = e.target.value;
+      if (value.length > 5) {
+        value = value.substring(0, 5);
+        e.target.value = value;
+      }
+      b.income=parseInt(value)||0;
       updateRowValues(tr, b);
       renderSummary();
     });
@@ -588,10 +600,14 @@ function renderTable(){
     });
     
     tr.querySelector(".income-plus").addEventListener("click",()=>{
-      b.income+=100; 
-      incomeInput.value = b.income;
-      updateRowValues(tr, b);
-      renderSummary();
+      // ตรวจสอบว่าเพิ่มแล้วจะเกิน 5 หลักหรือไม่
+      if (b.income < 99900) {
+        b.income+=100; 
+        if(b.income>99999)b.income=99999; // จำกัดค่าสูงสุด
+        incomeInput.value = b.income;
+        updateRowValues(tr, b);
+        renderSummary();
+      }
     });
 
     // เปอร์เซ็นต์
