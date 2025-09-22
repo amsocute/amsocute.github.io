@@ -137,6 +137,90 @@
       transform: scale(1.1);
     }
     
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 0;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.4s ease;
+      overflow: hidden;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-header {
+      background: linear-gradient(45deg, #ff6b2c, #ff8e53);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .modal-header.reset {
+      background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    }
+    
+    .modal-body {
+      padding: 25px;
+      text-align: center;
+    }
+    
+    .modal-footer {
+      padding: 15px 25px;
+      text-align: center;
+      background-color: #f8f9fa;
+      border-top: 1px solid #e9ecef;
+    }
+    
+    .close {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .close:hover {
+      transform: rotate(90deg);
+    }
+    
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .summary-item:last-child {
+      border-bottom: none;
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #ff6b2c;
+    }
+    
     /* ปรับสำหรับมือถือ */
     @media (max-width: 768px) {
       .mobile-input {
@@ -155,6 +239,27 @@
       
       .mobile-card {
         padding: 16px;
+      }
+      
+      .modal-content {
+        margin: 20% auto;
+        width: 95%;
+      }
+      
+      /* ปรับขนาดช่องสาขาให้ใหญ่ขึ้นในมือถือ */
+      .branch-input {
+        min-width: 100px !important;
+        font-size: 16px !important;
+        padding: 8px !important;
+      }
+      
+      /* ปรับขนาดตารางให้ใหญ่ขึ้นในมือถือ */
+      .mobile-table {
+        font-size: 14px !important;
+      }
+      
+      .mobile-table td, .mobile-table th {
+        padding: 8px 4px !important;
       }
     }
   </style>
@@ -209,7 +314,7 @@
           <h2 class="text-lg md:text-xl font-semibold text-gray-800">ข้อมูลสาขา</h2>
         </div>
         <div class="mobile-table-container">
-          <table class="w-full border-collapse">
+          <table class="w-full border-collapse mobile-table">
             <thead>
               <tr class="border-b-2 border-[#ff6b2c]/30 bg-[#ff6b2c]/10">
                 <th class="py-2 px-2 md:px-4 text-left font-semibold text-gray-700 text-xs md:text-sm">
@@ -339,6 +444,63 @@
     </div>
   </div>
 
+  <!-- Calculate Modal -->
+  <div id="calculateModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close" onclick="closeModal('calculateModal')">&times;</span>
+        <h2><i class="fas fa-calculator mr-2"></i>ผลการคำนวณ</h2>
+      </div>
+      <div class="modal-body">
+        <div class="mb-4">
+          <i class="fas fa-check-circle text-5xl text-green-500 mb-3"></i>
+          <p class="text-lg">คำนวณเสร็จสิ้น!</p>
+        </div>
+        <div id="modalSummary" class="text-left bg-gray-50 p-4 rounded-lg">
+          <!-- สรุปผลการคำนวณจะแสดงที่นี่ -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('calculateModal')" class="btn-calculate text-white font-semibold py-2 px-6 rounded-lg">
+          ตกลง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Modal -->
+  <div id="resetModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header reset">
+        <span class="close" onclick="closeModal('resetModal')">&times;</span>
+        <h2><i class="fas fa-exclamation-triangle mr-2"></i>ยืนยันการรีเซ็ต</h2>
+      </div>
+      <div class="modal-body">
+        <div class="mb-4">
+          <i class="fas fa-question-circle text-5xl text-yellow-500 mb-3"></i>
+          <p class="text-lg">คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตข้อมูลทั้งหมด?</p>
+          <p class="text-gray-600">การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('resetModal')" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg mr-3">
+          ยกเลิก
+        </button>
+        <button onclick="confirmReset()" class="btn-danger text-white font-semibold py-2 px-6 rounded-lg">
+          ยืนยันการรีเซ็ต
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio elements for sound effects -->
+  <audio id="calculateSound" preload="auto">
+    <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+  </audio>
+  <audio id="resetSound" preload="auto">
+    <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+  </audio>
+
 <script>
 const INITIAL_BRANCHES = 10;
 let branches = Array.from({length: INITIAL_BRANCHES}, (_, i)=>({name:`สาขา ${i+1}`, income:0, percent:30, location:""}));
@@ -362,7 +524,7 @@ function renderTable(){
     tr.className="border-b table-row";
     tr.innerHTML=`
       <td class="py-2 px-2 md:px-4">
-        <input type="text" value="${b.name}" class="w-full border-2 border-gray-200 rounded-lg p-1 md:p-2 text-xs md:text-sm focus:border-[#ff6b2c] focus:outline-none transition-all mobile-input">
+        <input type="text" value="${b.name}" class="w-full border-2 border-gray-200 rounded-lg p-1 md:p-2 text-xs md:text-sm focus:border-[#ff6b2c] focus:outline-none transition-all mobile-input branch-input">
       </td>
       <td class="py-2 px-2 md:px-4">
         <div class="flex items-center">
@@ -522,12 +684,42 @@ function renderSummary(){
   `;
 }
 
+// Modal Functions
+function openModal(modalId) {
+  document.getElementById(modalId).style.display = "block";
+  
+  // เล่นเสียงตามประเภทของ modal
+  if (modalId === 'calculateModal') {
+    playSound('calculateSound');
+  } else if (modalId === 'resetModal') {
+    playSound('resetSound');
+  }
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).style.display = "none";
+}
+
+// Function to play sound
+function playSound(soundId) {
+  const sound = document.getElementById(soundId);
+  if (sound) {
+    sound.currentTime = 0; // Reset audio to beginning
+    sound.play().catch(e => console.log("Audio play failed:", e));
+  }
+}
+
 // ปุ่ม
 document.getElementById("addBranch").addEventListener("click",()=>{
   branches.push({name:`สาขา ${branches.length+1}`, income:0, percent:30, location:""});
   renderTable();
 });
+
 document.getElementById("reset").addEventListener("click",()=>{
+  openModal('resetModal');
+});
+
+function confirmReset() {
   branches=Array.from({length:INITIAL_BRANCHES}, (_,i)=>({name:`สาขา ${i+1}`, income:0, percent:30, location:""}));
   document.getElementById("daily").value="";
   document.getElementById("fuel").value="";
@@ -538,7 +730,9 @@ document.getElementById("reset").addEventListener("click",()=>{
   document.getElementById("summary1").innerHTML = "";
   document.getElementById("summary2").innerHTML = "";
   renderTable();
-});
+  closeModal('resetModal');
+}
+
 document.getElementById("exportCSV").addEventListener("click",()=>{
   const header=["วันที่","สาขา","รายได้ (บาท)","% เก็บ","ค่าใช้จ่าย (บาท)","กำไร (บาท)","โลเคชั่น"];
   const date = document.getElementById("date").value;
@@ -573,7 +767,45 @@ document.getElementById("calculate").addEventListener("click",()=>{
       card.style.animation = 'fadeIn 0.5s ease forwards';
     }, index * 200);
   });
+  
+  // แสดง modal พร้อมสรุปผลการคำนวณ
+  showCalculateModal();
 });
+
+function showCalculateModal() {
+  const totalIncome = branches.reduce((a,b)=>a+b.income,0);
+  const totalBranchCost = branches.reduce((a,b)=>a+(b.income*b.percent/100),0);
+  const totalBranchProfit = totalIncome-totalBranchCost;
+  const expenses = getExpenses();
+  const totalExpenses = expenses.daily+expenses.fuel+expenses.food+expenses.other;
+  const finalProfit = totalBranchProfit-totalExpenses;
+  const avgPercent = branches.length?branches.reduce((a,b)=>a+b.percent,0)/branches.length:0;
+  
+  document.getElementById("modalSummary").innerHTML = `
+    <div class="summary-item">
+      <span>รวมรายได้:</span>
+      <span class="font-bold">${totalIncome.toLocaleString()} ฿</span>
+    </div>
+    <div class="summary-item">
+      <span>ค่าใช้จ่ายสาขา (${avgPercent.toFixed(0)}%):</span>
+      <span class="font-bold">${totalBranchCost.toLocaleString()} ฿</span>
+    </div>
+    <div class="summary-item">
+      <span>กำไรสาขา:</span>
+      <span class="font-bold">${totalBranchProfit.toLocaleString()} ฿</span>
+    </div>
+    <div class="summary-item">
+      <span>ค่าใช้จ่ายเพิ่มเติม:</span>
+      <span class="font-bold">${totalExpenses.toLocaleString()} ฿</span>
+    </div>
+    <div class="summary-item">
+      <span>กำไรสุทธิ:</span>
+      <span class="font-bold text-lg">${finalProfit.toLocaleString()} ฿</span>
+    </div>
+  `;
+  
+  openModal('calculateModal');
+}
 
 // วันที่
 document.getElementById("date").addEventListener("input",(e)=>{
@@ -607,6 +839,19 @@ document.querySelectorAll('#daily, #fuel, #food, #other').forEach((input, index)
     renderSummary();
   });
 });
+
+// ปิด modal เมื่อคลิกนอกพื้นที่ modal
+window.onclick = function(event) {
+  const calculateModal = document.getElementById("calculateModal");
+  const resetModal = document.getElementById("resetModal");
+  
+  if (event.target == calculateModal) {
+    calculateModal.style.display = "none";
+  }
+  if (event.target == resetModal) {
+    resetModal.style.display = "none";
+  }
+}
 
 // Render ครั้งแรก
 renderTable();
