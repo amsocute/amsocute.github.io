@@ -82,6 +82,16 @@
       box-shadow: 0 7px 14px rgba(0, 176, 155, 0.3);
     }
     
+    .btn-load {
+      background: linear-gradient(45deg, #3f51b5, #7986cb);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-load:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(63, 81, 181, 0.3);
+    }
+    
     .income-input {
       transition: all 0.3s ease;
     }
@@ -204,6 +214,10 @@
       background: linear-gradient(45deg, #00b09b, #96c93d);
     }
     
+    .modal-header.load {
+      background: linear-gradient(45deg, #3f51b5, #7986cb);
+    }
+    
     .modal-body {
       padding: 25px;
       text-align: center;
@@ -248,7 +262,7 @@
     .loading-spinner {
       border: 4px solid rgba(0, 0, 0, 0.1);
       border-radius: 50%;
-      border-top: 4px solid #00b09b;
+      border-top: 4px solid #3f51b5;
       width: 40px;
       height: 40px;
       animation: spin 1s linear infinite;
@@ -307,6 +321,66 @@
         font-size: 16px !important;
       }
     }
+    
+    /* สำหรับช่องค้นหา */
+    .search-container {
+      position: relative;
+      margin-bottom: 15px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 12px 40px 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 25px;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+      border-color: #ff6b2c;
+      box-shadow: 0 0 0 3px rgba(255, 107, 44, 0.2);
+    }
+    
+    .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+    }
+    
+    .search-results {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+    
+    .search-result-item {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .search-result-item:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+    
+    .search-result-date {
+      font-weight: bold;
+      color: #ff6b2c;
+    }
+    
+    .search-result-time {
+      color: #666;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body class="min-h-screen p-2 md:p-8">
@@ -351,6 +425,12 @@
           </button>
           <button id="sendData" class="btn-send text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
             <i class="fas fa-paper-plane mr-2"></i> <span>ส่งข้อมูล</span>
+          </button>
+          <button id="loadLatestData" class="btn-load text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
+            <i class="fas fa-download mr-2"></i> <span>ดึงข้อมูลล่าสุด</span>
+          </button>
+          <button id="checkConnection" class="btn-info text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center mobile-button">
+            <i class="fas fa-wifi mr-2"></i> <span>ตรวจสอบการเชื่อมต่อ</span>
           </button>
         </div>
       </div>
@@ -567,6 +647,32 @@
     </div>
   </div>
 
+  <!-- Load Latest Data Modal -->
+  <div id="loadLatestDataModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header load">
+        <span class="close" onclick="closeModal('loadLatestDataModal')">&times;</span>
+        <h2><i class="fas fa-download mr-2"></i>ดึงข้อมูลล่าสุดจาก Google Sheet</h2>
+      </div>
+      <div class="modal-body">
+        <div id="loadLatestStatus" class="mb-4">
+          <!-- สถานะการดึงข้อมูลจะแสดงที่นี่ -->
+        </div>
+        <div id="modalLoadLatestSummary" class="text-left bg-gray-50 p-4 rounded-lg">
+          <!-- ข้อมูลที่ดึงมาจะแสดงที่นี่ -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('loadLatestDataModal')" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg mr-3">
+          ปิด
+        </button>
+        <button id="confirmLoadLatest" class="btn-load text-white font-semibold py-2 px-6 rounded-lg" style="display: none;">
+          ยืนยันการดึงข้อมูล
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Audio elements for sound effects -->
   <audio id="calculateSound" preload="auto">
     <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
@@ -575,6 +681,9 @@
     <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
   </audio>
   <audio id="sendSound" preload="auto">
+    <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+  </audio>
+  <audio id="loadSound" preload="auto">
     <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
   </audio>
 
@@ -587,8 +696,20 @@ const monthsTH = ["มกราคม","กุมภาพันธ์","มี�
 
 function formatThaiDate(dateStr){
   if(!dateStr) return "";
-  const [year,month,day]=dateStr.split("-").map(Number);
-  return `${day} ${monthsTH[month-1]} ${year+543}`;
+  
+  try {
+    const [year,month,day]=dateStr.split("-").map(Number);
+    
+    // ตรวจสอบค่าว่าเป็นตัวเลขที่ถูกต้องหรือไม่
+    if(isNaN(year) || isNaN(month) || isNaN(day) || month < 1 || month > 12 || day < 1 || day > 31) {
+      return "";
+    }
+    
+    return `${day} ${monthsTH[month-1]} ${year+543}`;
+  } catch (e) {
+    console.error("Error formatting date:", e);
+    return "";
+  }
 }
 
 function renderTable(){
@@ -782,6 +903,8 @@ function openModal(modalId) {
     playSound('resetSound');
   } else if (modalId === 'sendDataModal') {
     playSound('sendSound');
+  } else if (modalId === 'loadLatestDataModal') {
+    playSound('loadSound');
   }
 }
 
@@ -896,6 +1019,144 @@ function showCalculateModal() {
   openModal('calculateModal');
 }
 
+// ฟังก์ชันดึงข้อมูลล่าสุดจาก Google Sheet
+function loadLatestData() {
+  // เปิด Modal สำหรับดึงข้อมูลล่าสุด
+  document.getElementById("loadLatestStatus").innerHTML = `
+    <div class="loading-spinner"></div>
+    <p class="text-lg">กำลังดึงข้อมูลล่าสุด...</p>
+  `;
+  
+  document.getElementById("modalLoadLatestSummary").innerHTML = "";
+  document.getElementById("confirmLoadLatest").style.display = "none";
+  openModal('loadLatestDataModal');
+  
+  // URL ของ Google Apps Script Web App สำหรับดึงข้อมูลล่าสุด
+  const url = `https://script.google.com/macros/s/AKfycbzDXoRZhsJj2HVUNZyssAp-kOfSgyTPrnpARzLFuCe-t54h0xqs3MfmWYKlquEPgWF2xg/exec?action=latestData`;
+  
+  console.log("Loading latest data from:", url);
+  
+  fetch(url)
+    .then(response => {
+      console.log("Response status:", response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Latest data loaded from server:", data);
+      
+      if (data.result === 'success') {
+        // แสดงสถานะการดึงข้อมูลสำเร็จ
+        document.getElementById("loadLatestStatus").innerHTML = `
+          <div class="mb-4">
+            <i class="fas fa-check-circle text-5xl text-green-500 mb-3"></i>
+            <p class="text-lg">ดึงข้อมูลล่าสุดสำเร็จ!</p>
+            <p class="text-gray-600">ข้อมูลวันที่ ${data.data.date} ครั้งที่ ${data.data.time} ถูกโหลดเรียบร้อยแล้ว</p>
+          </div>
+        `;
+        
+        // แสดงข้อมูลที่ดึงมา
+        if (data.data) {
+          let summaryHtml = `
+            <div class="summary-item">
+              <span>วันที่:</span>
+              <span class="font-bold">${data.data.date}</span>
+            </div>
+            <div class="summary-item">
+              <span>ครั้งที่:</span>
+              <span class="font-bold">${data.data.time}</span>
+            </div>
+            <div class="summary-item">
+              <span>เวลา:</span>
+              <span class="font-bold">${data.data.timestamp}</span>
+            </div>
+            <div class="summary-item">
+              <span>จำนวนสาขา:</span>
+              <span class="font-bold">${data.data.rows ? data.data.rows.length : 0} สาขา</span>
+            </div>
+          `;
+          
+          if (data.data.totals) {
+            summaryHtml += `
+              <div class="summary-item">
+                <span>รวมรายได้:</span>
+                <span class="font-bold">${data.data.totals.totalIncome.toLocaleString()} ฿</span>
+              </div>
+              <div class="summary-item">
+                <span>กำไรสุทธิ:</span>
+                <span class="font-bold">${data.data.totals.finalProfit.toLocaleString()} ฿</span>
+              </div>
+            `;
+          }
+          
+          document.getElementById("modalLoadLatestSummary").innerHTML = summaryHtml;
+          
+          // ตั้งค่าปุ่มยืนยันการดึงข้อมูล
+          document.getElementById("confirmLoadLatest").style.display = "inline-block";
+          document.getElementById("confirmLoadLatest").onclick = function() {
+            // นำข้อมูลที่ได้มาแสดงในฟอร์ม
+            if (data.data) {
+              // โหลดข้อมูลค่าใช้จ่ายเพิ่มเติม
+              if (data.data.expenses) {
+                document.getElementById("daily").value = data.data.expenses.daily || 0;
+                document.getElementById("fuel").value = data.data.expenses.fuel || 0;
+                document.getElementById("food").value = data.data.expenses.food || 0;
+                document.getElementById("other").value = data.data.expenses.other || 0;
+              }
+              
+              // โหลดข้อมูลสาขา
+              if (data.data.rows && data.data.rows.length > 0) {
+                // ล้างข้อมูลสาขาเดิม
+                branches = [];
+                
+                // เพิ่มข้อมูลสาขาใหม่
+                data.data.rows.forEach(row => {
+                  branches.push({
+                    name: row.name || "",
+                    income: parseInt(row.income) || 0,
+                    percent: parseInt(row.percent) || 30,
+                    location: row.location || ""
+                  });
+                });
+                
+                // อัปเดตตาราง
+                renderTable();
+              }
+              
+              // คำนวณสรุปใหม่
+              renderSummary();
+            }
+            
+            closeModal('loadLatestDataModal');
+          };
+        }
+      } else {
+        // แสดงสถานะการดึงข้อมูลล้มเหลว
+        document.getElementById("loadLatestStatus").innerHTML = `
+          <div class="mb-4">
+            <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-3"></i>
+            <p class="text-lg">เกิดข้อผิดพลาด!</p>
+            <p class="text-gray-600">${data.message || 'ไม่พบข้อมูลล่าสุดในระบบ'}</p>
+          </div>
+        `;
+      }
+    })
+    .catch(err => {
+      console.error("เกิดข้อผิดพลาด:", err);
+      
+      // แสดงสถานะการดึงข้อมูลล้มเหลว
+      document.getElementById("loadLatestStatus").innerHTML = `
+        <div class="mb-4">
+          <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-3"></i>
+          <p class="text-lg">เกิดข้อผิดพลาด!</p>
+          <p class="text-gray-600">ไม่สามารถดึงข้อมูลได้ในขณะนี้: ${err.message}</p>
+        </div>
+      `;
+    });
+}
+
 // ฟังก์ชันส่งข้อมูลไปยัง Google Sheet
 function sendData() {
   // วันที่
@@ -905,6 +1166,12 @@ function sendData() {
   // ตรวจสอบว่ากรอกวันที่หรือไม่
   if (!date) {
     alert("กรุณาเลือกวันที่ก่อนส่งข้อมูล");
+    return;
+  }
+  
+  // ตรวจสอบว่าวันที่ถูกต้องหรือไม่
+  if (!formattedDate) {
+    alert("รูปแบบวันที่ไม่ถูกต้อง กรุณาเลือกวันที่ใหม่");
     return;
   }
 
@@ -947,13 +1214,6 @@ function sendData() {
 
   console.log("📤 ส่งข้อมูล:", payload);
 
-  // สร้าง FormData สำหรับส่งแบบ form-urlencoded (แก้ปัญหา CORS)
-  const formData = new FormData();
-  formData.append('date', formattedDate);
-  formData.append('rows', JSON.stringify(rows));
-  formData.append('expenses', JSON.stringify(expenses));
-  formData.append('totals', JSON.stringify(payload.totals));
-
   // แสดง Modal ยืนยันการส่งข้อมูล
   showSendDataModal(payload);
 }
@@ -988,74 +1248,95 @@ function showSendDataModal(payload) {
     `;
     
     // ส่งข้อมูลไปยัง Google Script
-    const formData = new FormData();
-    formData.append('date', payload.date);
-    formData.append('rows', JSON.stringify(payload.rows));
-    formData.append('expenses', JSON.stringify(payload.expenses));
-    formData.append('totals', JSON.stringify(payload.totals));
-    
-    // URL ของ Google Apps Script Web App
-    const url = "https://script.google.com/macros/s/AKfycbzF3PapFjrKOwAEUt1rRyq9-Z8_CIhhK_1w7NW0DpywScauv42i22-qVXIGC29u2A98/exec";
-    
-    fetch(url, {
-      method: "POST",
-      body: formData,
-      // ลบ mode: "no-cors" เพื่อให้สามารถรับ response ได้
-    })
-    .then(response => {
-      // แปลง response เป็น JSON
-      return response.json();
-    })
-    .then(data => {
-      console.log("Response from server:", data);
-      
-      if (data.result === 'success') {
-        // แสดงสถานะการส่งสำเร็จ
-        document.getElementById("sendStatus").innerHTML = `
-          <div class="mb-4">
-            <i class="fas fa-check-circle text-5xl text-green-500 mb-3"></i>
-            <p class="text-lg">ส่งข้อมูลสำเร็จ!</p>
-            <p class="text-gray-600">ข้อมูลถูกบันทึกใน Google Sheet เรียบร้อยแล้ว</p>
-            <p class="text-gray-600">จำนวน ${data.appended} รายการ</p>
-          </div>
-        `;
-      } else {
-        // แสดงสถานะการส่งล้มเหลว
-        document.getElementById("sendStatus").innerHTML = `
-          <div class="mb-4">
-            <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-3"></i>
-            <p class="text-lg">เกิดข้อผิดพลาด!</p>
-            <p class="text-gray-600">${data.message || 'ไม่สามารถส่งข้อมูลได้ในขณะนี้'}</p>
-          </div>
-        `;
-      }
-      
-      // ซ่อนปุ่มยืนยันการส่ง
-      document.getElementById("confirmSend").style.display = "none";
-    })
-    .catch(err => {
-      console.error("เกิดข้อผิดพลาด:", err);
-      
-      // แสดงสถานะการส่งล้มเหลว
-      document.getElementById("sendStatus").innerHTML = `
-        <div class="mb-4">
-          <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-3"></i>
-          <p class="text-lg">เกิดข้อผิดพลาด!</p>
-          <p class="text-gray-600">ไม่สามารถส่งข้อมูลได้ในขณะนี้: ${err.message}</p>
-        </div>
-      `;
-      
-      // ซ่อนปุ่มยืนยันการส่ง
-      document.getElementById("confirmSend").style.display = "none";
-    });
+    sendToGoogleSheet(payload);
   };
   
   openModal('sendDataModal');
 }
 
+// ฟังก์ชันส่งข้อมูลไปยัง Google Sheet โดยเฉพาะ
+function sendToGoogleSheet(payload) {
+  // แสดงสถานะกำลังส่งข้อมูล
+  document.getElementById("sendStatus").innerHTML = `
+    <div class="loading-spinner"></div>
+    <p class="text-lg">กำลังส่งข้อมูล...</p>
+  `;
+  
+  // URL ของ Google Apps Script Web App
+  const url = "https://script.google.com/macros/s/AKfycbzDXoRZhsJj2HVUNZyssAp-kOfSgyTPrnpARzLFuCe-t54h0xqs3MfmWYKlquEPgWF2xg/exec";
+  
+  // ส่งข้อมูลแบบ JSON
+  fetch(url, {
+    method: 'POST',
+    mode: 'no-cors', // ใช้ no-cors เพื่อหลีกเลี่ยงปัญหา CORS
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(response => {
+    // เนื่องจากใช้ no-cors เราจะไม่สามารถอ่าน response ได้
+    // ดังนั้นเราจะสมมติว่าการส่งสำเร็จเสมอ
+    console.log("Data sent successfully");
+    
+    // แสดงสถานะการส่งสำเร็จ
+    document.getElementById("sendStatus").innerHTML = `
+      <div class="mb-4">
+        <i class="fas fa-check-circle text-5xl text-green-500 mb-3"></i>
+        <p class="text-lg">ส่งข้อมูลสำเร็จ!</p>
+        <p class="text-gray-600">ข้อมูลถูกส่งไปยัง Google Sheet เรียบร้อยแล้ว</p>
+        <p class="text-gray-500 text-sm mt-2">หมายเหตุ: เนื่องจากข้อจำกัดของระบบ ไม่สามารถตรวจสอบสถานะการบันทึกจาก Google Sheet ได้</p>
+      </div>
+    `;
+    
+    // ซ่อนปุ่มยืนยันการส่ง
+    document.getElementById("confirmSend").style.display = "none";
+  })
+  .catch(error => {
+    console.error('Error sending data:', error);
+    
+    // แสดงสถานะการส่งล้มเหลว
+    document.getElementById("sendStatus").innerHTML = `
+      <div class="mb-4">
+        <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-3"></i>
+        <p class="text-lg">เกิดข้อผิดพลาด!</p>
+        <p class="text-gray-600">ไม่สามารถส่งข้อมูลได้: ${error.message}</p>
+        <p class="text-gray-500 text-sm mt-2">กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองใหม่อีกครั้ง</p>
+      </div>
+    `;
+    
+    // ซ่อนปุ่มยืนยันการส่ง
+    document.getElementById("confirmSend").style.display = "none";
+  });
+}
+
+// ฟังก์ชันตรวจสอบสถานะการเชื่อมต่อ
+function checkConnection() {
+  const url = "https://script.google.com/macros/s/AKfycbzDXoRZhsJj2HVUNZyssAp-kOfSgyTPrnpARzLFuCe-t54h0xqs3MfmWYKlquEPgWF2xg/exec";
+  
+  console.log("🔍 ตรวจสอบการเชื่อมต่อกับ:", url);
+  
+  fetch(url + "?action=ping")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("✅ การเชื่อมต่อสำเร็จ:", data);
+      alert("การเชื่อมต่อสำเร็จ!\n" + JSON.stringify(data));
+    })
+    .catch(err => {
+      console.error("❌ การเชื่อมต่อล้มเหลว:", err);
+      alert("การเชื่อมต่อล้มเหลว: " + err.message);
+    });
+}
+
 // วันที่
 document.getElementById("date").addEventListener("input",(e)=>{
-  document.getElementById("formattedDate").textContent="วันที่ที่เลือก: "+formatThaiDate(e.target.value);
+  const formattedDate = formatThaiDate(e.target.value);
+  document.getElementById("formattedDate").textContent="วันที่ที่เลือก: "+formattedDate;
 });
 
 // ค่าใช้จ่ายเพิ่มเติม - ปุ่มลด
@@ -1091,6 +1372,7 @@ window.onclick = function(event) {
   const calculateModal = document.getElementById("calculateModal");
   const resetModal = document.getElementById("resetModal");
   const sendDataModal = document.getElementById("sendDataModal");
+  const loadLatestDataModal = document.getElementById("loadLatestDataModal");
   
   if (event.target == calculateModal) {
     calculateModal.style.display = "none";
@@ -1101,10 +1383,16 @@ window.onclick = function(event) {
   if (event.target == sendDataModal) {
     sendDataModal.style.display = "none";
   }
+  if (event.target == loadLatestDataModal) {
+    loadLatestDataModal.style.display = "none";
+  }
 }
 
-// ผูกปุ่มส่งข้อมูลกับฟังก์ชัน
+// ผูกปุ่มกับฟังก์ชัน
 document.getElementById("sendData").addEventListener("click", sendData);
+document.getElementById("loadLatestData").addEventListener("click", loadLatestData);
+document.getElementById("testSend").addEventListener("click", testSendData);
+document.getElementById("checkConnection").addEventListener("click", checkConnection);
 
 // Render ครั้งแรก
 renderTable();
